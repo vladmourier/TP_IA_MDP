@@ -21,6 +21,7 @@ public class ValueIterationAgent extends PlanningValueAgent {
      * discount facteur
      */
     protected double gamma;
+    private Map<Etat, Double> Values;
     //*** VOTRE CODE
 
     /**
@@ -32,7 +33,7 @@ public class ValueIterationAgent extends PlanningValueAgent {
         super(mdp);
         this.gamma = gamma;
         //*** VOTRE CODE
-
+        Values = new HashMap<>();
     }
 
     public ValueIterationAgent(MDP mdp) {
@@ -51,7 +52,22 @@ public class ValueIterationAgent extends PlanningValueAgent {
         //delta < epsilon 
         this.delta = 0.0;
         //*** VOTRE CODE
-
+        double max = 0, current = 0, sum=0;
+        Map<Etat, Double> proba;
+        try {
+            for(Etat e : getMdp().getEtatsAccessibles()){
+                Values.put(e, null);
+                for(Action a : getMdp().getActionsPossibles(e)){
+                    proba = getMdp().getEtatTransitionProba(e, a);
+                    for(Etat s : proba.keySet()){
+                        
+                    }
+                    
+                }
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(ValueIterationAgent.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
         // mise a jour vmax et vmin pour affichage du gradient de couleur:
         //vmax est la valeur de max pour tout s de V
@@ -73,9 +89,11 @@ public class ValueIterationAgent extends PlanningValueAgent {
 
     @Override
     public double getValeur(Etat _e) {
-        return ;
+        if(this.Values.containsKey(_e)){
+            return this.Values.get(_e);
+        } else return 0.0;
     }
-
+    
     /**
      * renvoi la (les) action(s) de plus forte(s) valeur(s) dans l'etat e
      * (plusieurs actions sont renvoyees si valeurs identiques, liste vide si
