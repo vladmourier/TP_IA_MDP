@@ -25,7 +25,7 @@ public class ValueIterationAgent extends PlanningValueAgent{
      * discount facteur
      */
     protected double gamma;
-    private Map<Etat, Double> visited;
+    private Map<Etat, Double> Values;
     //*** VOTRE CODE
     
     
@@ -39,7 +39,7 @@ public class ValueIterationAgent extends PlanningValueAgent{
         super(mdp);
         this.gamma = gamma;
         //*** VOTRE CODE
-        visited = new HashMap<>();
+        Values = new HashMap<>();
     }
     
     
@@ -59,9 +59,22 @@ public class ValueIterationAgent extends PlanningValueAgent{
         //delta < epsilon
         this.delta=0.0;
         //*** VOTRE CODE
-        
-        
-        
+        double max = 0, current = 0, sum=0;
+        Map<Etat, Double> proba;
+        try {
+            for(Etat e : getMdp().getEtatsAccessibles()){
+                Values.put(e, null);
+                for(Action a : getMdp().getActionsPossibles(e)){
+                    proba = getMdp().getEtatTransitionProba(e, a);
+                    for(Etat s : proba.keySet()){
+                        
+                    }
+                    
+                }
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(ValueIterationAgent.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
         // mise a jour vmax et vmin pour affichage du gradient de couleur:
         //vmax est la valeur de max pour tout s de V
@@ -79,35 +92,15 @@ public class ValueIterationAgent extends PlanningValueAgent{
     @Override
     public Action getAction(Etat e) {
         //*** VOTRE CODE
-        
-        
         return this.getMdp().getActionsPossibles(e).get(new Random().nextInt(this.getMdp().getActionsPossibles(e).size()));
     }
     @Override
     public double getValeur(Etat _e) {
-        //*** VOTRE CODE
-        double res = 0, proba, recompense, max = 0;
-        if(!visited.containsKey(_e)){
-            visited.put(_e, null);
-            for(Action a : this.getMdp().getActionsPossibles(_e)){
-                try {
-                    Map<Etat, Double> probabilites = this.getMdp().getEtatTransitionProba(_e,a);
-                    for(Etat e : probabilites.keySet()){
-                        proba = probabilites.get(e);
-                        recompense = this.getMdp().getRecompense(_e, a, e);
-                        res += proba * (recompense + (gamma * this.getValeur(e)));
-                    }
-                } catch (Exception ex) {
-                    Logger.getLogger(AgentRandom.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                max = res>max? res : max;
-            }
-            visited.putIfAbsent(_e, max);
-            
-        }
-        
-        return max;
+        if(this.Values.containsKey(_e)){
+            return this.Values.get(_e);
+        } else return 0.0;
     }
+    
     /**
      * renvoi la (les) action(s) de plus forte(s) valeur(s) dans l'etat e
      * (plusieurs actions sont renvoyees si valeurs identiques, liste vide si aucune action n'est possible)
@@ -115,7 +108,7 @@ public class ValueIterationAgent extends PlanningValueAgent{
     @Override
     public List<Action> getPolitique(Etat _e) {
         List<Action> l = new ArrayList<>();
-        //*** VOTRE CODE
+//*** VOTRE CODE
         
         
         return l;
@@ -125,7 +118,7 @@ public class ValueIterationAgent extends PlanningValueAgent{
     @Override
     public void reset() {
         super.reset();
-        //*** VOTRE CODE
+//*** VOTRE CODE
         
         
         
