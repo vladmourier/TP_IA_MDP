@@ -9,6 +9,7 @@ import environnement.Action;
 import environnement.Etat;
 import environnement.MDP;
 import environnement.gridworld.ActionGridworld;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,7 +25,7 @@ public class ValueIterationAgent extends PlanningValueAgent{
      * discount facteur
      */
     protected double gamma;
-    private List<Etat> visited;
+    private Map<Etat, Double> visited;
     //*** VOTRE CODE
     
     
@@ -38,7 +39,7 @@ public class ValueIterationAgent extends PlanningValueAgent{
         super(mdp);
         this.gamma = gamma;
         //*** VOTRE CODE
-        visited = new ArrayList<>();
+        visited = new HashMap<>();
     }
     
     
@@ -80,14 +81,14 @@ public class ValueIterationAgent extends PlanningValueAgent{
         //*** VOTRE CODE
         
         
-        return null;
+        return this.getMdp().getActionsPossibles(e).get(new Random().nextInt(this.getMdp().getActionsPossibles(e).size()));
     }
     @Override
     public double getValeur(Etat _e) {
         //*** VOTRE CODE
-        double res = 0, proba, recompense;
-        if(!visited.contains(_e)){
-            visited.add(_e);
+        double res = 0, proba, recompense, max = 0;
+        if(!visited.containsKey(_e)){
+            visited.put(_e, null);
             for(Action a : this.getMdp().getActionsPossibles(_e)){
                 try {
                     Map<Etat, Double> probabilites = this.getMdp().getEtatTransitionProba(_e,a);
@@ -99,13 +100,13 @@ public class ValueIterationAgent extends PlanningValueAgent{
                 } catch (Exception ex) {
                     Logger.getLogger(AgentRandom.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                
+                max = res>max? res : max;
             }
-        } else {
+            visited.putIfAbsent(_e, max);
             
         }
         
-        return res;
+        return max;
     }
     /**
      * renvoi la (les) action(s) de plus forte(s) valeur(s) dans l'etat e
