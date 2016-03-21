@@ -119,8 +119,8 @@ public class ValueIterationAgent extends PlanningValueAgent{
      * renvoi la (les) action(s) de plus forte(s) valeur(s) dans l'etat e
      * (plusieurs actions sont renvoyees si valeurs identiques, liste vide si aucune action n'est possible)
      */
-    @Override
-    public List<Action> getPolitique(Etat _e) {
+    //@Override
+    public List<Action> getPolitique2(Etat _e) {
         List<Action> l = new ArrayList<>();
         //*** VOTRE CODE
         double max = 0.;
@@ -128,13 +128,12 @@ public class ValueIterationAgent extends PlanningValueAgent{
         for(Action a : ac){
             try {
                 for(Etat e : getMdp().getEtatTransitionProba(_e, a).keySet()){
-                    l.add(a);
                     if (Values.get(e)>max || (getMdp().estAbsorbant(e) && getMdp().getRecompense(_e, a, e)>0)) {
                         max = Math.max(Values.get(e),getMdp().getRecompense(_e, a, e));
                         l.clear();
                         l.add(a);
-                    }else if (Values.get(e)<max) {
-                        l.remove(a);
+                    }else if (Values.get(e)==max) {
+                        l.add(a);
                     }
                 }
             } catch (Exception ex) {
@@ -143,7 +142,31 @@ public class ValueIterationAgent extends PlanningValueAgent{
         }
         return l;
     }
-    
+    @Override
+    public List<Action> getPolitique(Etat _e) {
+        List<Action> l = new ArrayList<>();
+        //*** VOTRE CODE
+        double max = 0., current = 0.;
+        List<Action> ac = getMdp().getActionsPossibles(_e);
+        for(Action a : ac){
+            try {
+                for(Etat e : getMdp().getEtatTransitionProba(_e, a).keySet()){
+                    current += Math.max(Values.get(e),getMdp().getRecompense(_e, a, e));
+                }
+                if(current>max){
+                    l.clear();
+                }
+                if(current>=max){
+                    l.add(a);
+                    max = current;
+                }
+                current = 0.;
+            } catch (Exception ex) {
+                Logger.getLogger(ValueIterationAgent.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return l;
+    }
     @Override
     public void reset() {
         super.reset();
