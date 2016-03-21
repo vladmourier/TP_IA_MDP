@@ -7,6 +7,10 @@ import java.util.Random;
 import environnement.Action;
 import environnement.Etat;
 import environnement.MDP;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Cet agent met a jour sa fonction de valeur avec value iteration et choisit
@@ -113,7 +117,7 @@ public class ValueIterationAgent extends PlanningValueAgent {
     @Override
     public void reset() {
         super.reset();
-        Values = null;
+        Values = new HashMap<>();
         this.notifyObs();
 
     }
