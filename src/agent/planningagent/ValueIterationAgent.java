@@ -151,8 +151,9 @@ public class ValueIterationAgent extends PlanningValueAgent{
         List<Action> ac = getMdp().getActionsPossibles(_e);
         for(Action a : ac){
             try {
-                for(Etat e : getMdp().getEtatTransitionProba(_e, a).keySet()){
-                    current += Math.max(Values.get(e),getMdp().getRecompense(_e, a, e));
+                Map<Etat, Double> proba = getMdp().getEtatTransitionProba(_e, a);
+                for(Etat e : proba.keySet()){
+                    current += (proba.get(e) * (getMdp().getRecompense(_e, a, e) + (gamma*Values.get(e))));
                 }
                 if(current>max){
                     l.clear();
