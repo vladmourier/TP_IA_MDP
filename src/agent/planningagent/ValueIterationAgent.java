@@ -106,7 +106,7 @@ public class ValueIterationAgent extends PlanningValueAgent{
     @Override
     public Action getAction(Etat e) {
         //*** VOTRE CODE
-        return getMdp().estAbsorbant(e) ? null :  getPolitique(e).get(new Random().nextInt(this.getMdp().getActionsPossibles(e).size()));
+        return getMdp().estAbsorbant(e) ? null :  this.getMdp().getActionsPossibles(e).get(new Random().nextInt(this.getMdp().getActionsPossibles(e).size()));
     }
     @Override
     public double getValeur(Etat _e) {
@@ -133,7 +133,7 @@ public class ValueIterationAgent extends PlanningValueAgent{
                         max = Values.get(e);
                         l.clear();
                         l.add(a);
-                    }else if (Values.get(e)<max || (getMdp().estAbsorbant(e) && getMdp().getRecompense(_e, a, e)<0)) {
+                    }else if (Values.get(e)<max) {
                         l.remove(a);
                     }
                 }
