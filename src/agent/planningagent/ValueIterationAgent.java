@@ -106,7 +106,7 @@ public class ValueIterationAgent extends PlanningValueAgent{
     @Override
     public Action getAction(Etat e) {
         //*** VOTRE CODE
-        return getMdp().estAbsorbant(e) ? null :  this.getMdp().getActionsPossibles(e).get(new Random().nextInt(this.getMdp().getActionsPossibles(e).size()));
+        return getMdp().estAbsorbant(e) ? null :  getPolitique(e).get(new Random().nextInt(this.getMdp().getActionsPossibles(e).size()));
     }
     @Override
     public double getValeur(Etat _e) {
@@ -122,11 +122,26 @@ public class ValueIterationAgent extends PlanningValueAgent{
     @Override
     public List<Action> getPolitique(Etat _e) {
         List<Action> l = new ArrayList<>();
-//*** VOTRE CODE
-        
-        
+        //*** VOTRE CODE
+        double max = 0.;
+        List<Action> ac = getMdp().getActionsPossibles(_e);
+        for(Action a : ac){
+            try {
+                for(Etat e : getMdp().getEtatTransitionProba(_e, a).keySet()){
+                    l.add(a);
+                    if (Values.get(e)>max || (getMdp().estAbsorbant(e) && getMdp().getRecompense(_e, a, e)>0)) {
+                        max = Values.get(e);
+                        l.clear();
+                        l.add(a);
+                    }else if (Values.get(e)<max || (getMdp().estAbsorbant(e) && getMdp().getRecompense(_e, a, e)<0)) {
+                        l.remove(a);
+                    }
+                }
+            } catch (Exception ex) {
+                Logger.getLogger(ValueIterationAgent.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
         return l;
-        
     }
     
     @Override
