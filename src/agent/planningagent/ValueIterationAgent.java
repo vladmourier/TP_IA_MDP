@@ -130,7 +130,7 @@ public class ValueIterationAgent extends PlanningValueAgent{
                 for(Etat e : getMdp().getEtatTransitionProba(_e, a).keySet()){
                     l.add(a);
                     if (Values.get(e)>max || (getMdp().estAbsorbant(e) && getMdp().getRecompense(_e, a, e)>0)) {
-                        max = Values.get(e);
+                        max = Math.max(Values.get(e),getMdp().getRecompense(_e, a, e));
                         l.clear();
                         l.add(a);
                     }else if (Values.get(e)<max) {
