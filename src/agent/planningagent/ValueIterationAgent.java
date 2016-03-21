@@ -40,6 +40,9 @@ public class ValueIterationAgent extends PlanningValueAgent{
         this.gamma = gamma;
         //*** VOTRE CODE
         Values = new HashMap<>();
+        for(Etat e : getMdp().getEtatsAccessibles()){
+            Values.putIfAbsent(e, 0.0);
+        }
     }
     
     
@@ -59,19 +62,34 @@ public class ValueIterationAgent extends PlanningValueAgent{
         //delta < epsilon
         this.delta=0.0;
         //*** VOTRE CODE
-        double max = 0, current = 0, sum=0;
+        Double max = 0., min=0., current, max_max = 0., min_min = 0.;
         Map<Etat, Double> proba;
+        Map<Etat, Double> temp = new HashMap<>();
         try {
             for(Etat e : getMdp().getEtatsAccessibles()){
-                Values.put(e, null);
-                for(Action a : getMdp().getActionsPossibles(e)){
-                    proba = getMdp().getEtatTransitionProba(e, a);
-                    for(Etat s : proba.keySet()){
-                        
+                temp.putIfAbsent(e, null);
+                if(!getMdp().estAbsorbant(e)){
+                    for(Action a : getMdp().getActionsPossibles(e)){
+                        current = 0.;
+                        proba = getMdp().getEtatTransitionProba(e, a);
+                        for(Etat s : proba.keySet()){
+                            try{
+                            current = current + (proba.get(s) * (getMdp().getRecompense(e, a, s) + (gamma*Values.get(s))));
+                            }catch(NullPointerException exc){
+                                System.out.println(s.toString());
+                            }
+                                    System.out.println("current = " + current +"+ (" +proba.get(s)+" * (" +getMdp().getRecompense(e, a, s) + " + (" + gamma + " * " + this.getValeur(s)+ "))) = " + current);
+                        }
+                        if(current > max) max = current;
+                        if(current<min) min = current;
                     }
-                    
+                    temp.put(e, max);
+                    if(max > max_max) max_max = max;
+                    if(min< min_min)    min_min = min;
+                    max = min = 0.;
                 }
             }
+            Values = temp;
         } catch (Exception ex) {
             Logger.getLogger(ValueIterationAgent.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -80,6 +98,8 @@ public class ValueIterationAgent extends PlanningValueAgent{
         //vmax est la valeur de max pour tout s de V
         //vmin est la valeur de min pour tout s de V
         // ...
+        vmax = max_max;
+        vmin = min_min;
         
         //******************* a laisser a la fin de la methode
         this.notifyObs();
@@ -97,7 +117,7 @@ public class ValueIterationAgent extends PlanningValueAgent{
     @Override
     public double getValeur(Etat _e) {
         if(this.Values.containsKey(_e)){
-            return this.Values.get(_e);
+            return this.Values.get(_e) != null ? this.Values.get(_e) : 0.;
         } else return 0.0;
     }
     
