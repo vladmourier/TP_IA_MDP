@@ -106,7 +106,8 @@ public class ValueIterationAgent extends PlanningValueAgent{
     @Override
     public Action getAction(Etat e) {
         //*** VOTRE CODE
-        return getMdp().estAbsorbant(e) ? null :  this.getMdp().getActionsPossibles(e).get(new Random().nextInt(this.getMdp().getActionsPossibles(e).size()));
+        List<Action> Politique = getPolitique(e);
+        return getMdp().estAbsorbant(e) ? null : Politique.get(new Random().nextInt(Politique.size()));
     }
     @Override
     public double getValeur(Etat _e) {
